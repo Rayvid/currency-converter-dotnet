@@ -36,6 +36,7 @@ namespace ConversionUsingFixerIo.ConsoleHost
                     services.AddOptions();
                     services.AddHostedService<Worker>();
                     services.AddSingleton<IRateService, RateService>();
+                    services.AddSingleton<IFixerIoClient, FixerIoClient>();
                 })
                 .ConfigureLogging((hostingContext, logging) => {
                     logging.ClearProviders();
