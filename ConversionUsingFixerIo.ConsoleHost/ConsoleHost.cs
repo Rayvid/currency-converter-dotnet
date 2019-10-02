@@ -49,10 +49,11 @@ namespace ConversionUsingFixerIo.ConsoleHost
             var test = host.Services.GetService<IRateService>();
             host.Services.GetService<ILogger<ConsoleHost>>().LogDebug("Starting host");
 
+            Console.WriteLine("Press <ENTER> to exit");
+
             var cts = new CancellationTokenSource();
             host.RunAsync(cts.Token);
 
-            Console.WriteLine("Press <ENTER> to exit");
             ConsoleKeyInfo? key = null;
             do
             {
@@ -67,16 +68,26 @@ namespace ConversionUsingFixerIo.ConsoleHost
             private Task _executingTask;
             private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
             private ILogger _logger;
+            private IRateService _rateService;
 
-            public Worker(ILogger<Worker> logger)
+            public Worker(ILogger<Worker> logger, IRateService rateService)
             {
                 _logger = logger;
+                _rateService = rateService;
             }
 
             protected Task ExecuteAsync(CancellationToken stoppingToken)
             {
-                _logger.LogDebug("Test");
-                return Task.FromResult(0);
+                var actualTask = new Task(async () =>
+                {
+                    Console.WriteLine("Getting rates");
+                    Console.WriteLine("Getting rate for EUR to USD and its - {0}", await _rateService.GetRateUsingEurAsBase("EUR", "USD"));
+                    Console.WriteLine("Getting rate for EUR to GBP and its - {0}", await _rateService.GetRateUsingEurAsBase("EUR", "GBP"));
+                    Console.WriteLine("Getting rate for GBP to USD and its - {0}", await _rateService.GetRateUsingEurAsBase("GBP", "USD"));
+                });
+                actualTask.Start();
+
+                return actualTask;
             }
 
             public Task StartAsync(CancellationToken cancellationToken)

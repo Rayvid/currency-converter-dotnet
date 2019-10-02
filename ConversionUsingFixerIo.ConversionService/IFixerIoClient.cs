@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ConversionUsingFixerIo.ConversionService
 {
     public interface IFixerIoClient
     {
-        Dictionary<string, decimal> GetEurBasedRates();
+        Task<Dictionary<string, decimal>> GetEurBasedRates();
     }
 }

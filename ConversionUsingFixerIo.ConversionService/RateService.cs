@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ConversionUsingFixerIo.ConversionService
 {
@@ -13,14 +14,16 @@ namespace ConversionUsingFixerIo.ConversionService
             _fixerIoClient = fixerIoClient;
         }
 
-        public decimal GetRate(string sourceCurrency, string destinationCurrency)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<decimal> GetRate(string sourceCurrency, string destinationCurrency)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new System.NotImplementedException(); // No direct conversion
         }
 
-        public decimal GetRateUsingEurAsBase(string sourceCurrency, string destinationCurrency)
+        public async Task<decimal> GetRateUsingEurAsBase(string sourceCurrency, string destinationCurrency)
         {
-            var rates = _fixerIoClient.GetEurBasedRates();
+            var rates = await _fixerIoClient.GetEurBasedRates();
             
             if (!rates.ContainsKey(sourceCurrency.ToUpperInvariant()))
             {

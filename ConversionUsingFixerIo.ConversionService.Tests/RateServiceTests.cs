@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 
 namespace ConversionUsingFixerIo.ConversionService.Tests
 {
@@ -197,14 +198,14 @@ namespace ConversionUsingFixerIo.ConversionService.Tests
 }";
             var eurBasedRates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(
                 JObject.Parse(mockedResponse)["rates"].ToString());
-            fixerIoClientMock.CallsTo(_ => _.GetEurBasedRates()).Returns(eurBasedRates);
+            fixerIoClientMock.CallsTo(_ => _.GetEurBasedRates()).Returns(Task.FromResult(eurBasedRates));
         }
 
         [TestCase("EUR", "USD", 1.091477)]
         [TestCase("GbP", "uSd", 1.2271480321370027500387883639)]
         public void GivenKnownEurBasedRates_TestHappyFlow(string from, string to, decimal expectedRate)
         {
-            Assert.That(Math.Round(_rateService.GetRateUsingEurAsBase(from, to), 14), Is.EqualTo(expectedRate));
+            Assert.That(Math.Round(_rateService.GetRateUsingEurAsBase(from, to).Result, 14), Is.EqualTo(expectedRate));
         }
 
         [TestCase("EUR", "USDa", true)]
@@ -214,11 +215,12 @@ namespace ConversionUsingFixerIo.ConversionService.Tests
         {
             if (isUnknownCurrencyThrown)
             {
-                Assert.That(() => Math.Round(_rateService.GetRateUsingEurAsBase(from, to), 14), Throws.TypeOf(typeof(UnknownCurrencyException)));
+                Assert.That(() => Math.Round(_rateService.GetRateUsingEurAsBase(from, to).Result, 14),
+                    Throws.TypeOf(typeof(AggregateException)).And.InnerException.TypeOf(typeof(UnknownCurrencyException)));
             }
             else
             {
-                Assert.That(() => Math.Round(_rateService.GetRateUsingEurAsBase(from, to), 14), Throws.Nothing);
+                Assert.That(() => Math.Round(_rateService.GetRateUsingEurAsBase(from, to).Result, 14), Throws.Nothing);
             }
         }
     }
