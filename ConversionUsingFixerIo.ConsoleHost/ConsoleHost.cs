@@ -84,7 +84,7 @@ namespace ConversionUsingFixerIo.ConsoleHost
                     Console.WriteLine("Getting rate for EUR to USD and its - {0}", await _rateService.GetRateUsingEurAsBase("EUR", "USD"));
                     Console.WriteLine("Getting rate for EUR to GBP and its - {0}", await _rateService.GetRateUsingEurAsBase("EUR", "GBP"));
                     Console.WriteLine("Getting rate for GBP to USD and its - {0}", await _rateService.GetRateUsingEurAsBase("GBP", "USD"));
-                });
+                }, stoppingToken);
                 actualTask.Start();
 
                 return actualTask;
